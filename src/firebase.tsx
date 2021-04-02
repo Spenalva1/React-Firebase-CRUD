@@ -14,4 +14,6 @@ measurementId: "G-DLJG69HBTQ"
 // Initialize Firebase
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
-export const firestore = firebaseApp.firestore();
+const firestore = firebaseApp.firestore();
+
+export default firestore;

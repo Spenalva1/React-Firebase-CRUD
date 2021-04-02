@@ -1,7 +1,7 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 
 type props = {
-    addLink: Function
+    callback: Function
 }
 
 const LinkForm = (props: props) => {
@@ -22,7 +22,8 @@ const LinkForm = (props: props) => {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        props.addLink(values);
+        props.callback(values);
+        setValues(initialState);
     }
 
     return (
