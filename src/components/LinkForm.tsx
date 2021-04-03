@@ -1,17 +1,27 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { Link } from "../link.interface";
 
 type props = {
-    callback: Function
+    callback: Function,
+    editingLink: Link | null
 }
 
 const LinkForm = (props: props) => {
-    const initialState = {
+    const initialValuesState: Link = {
         url: '',
         name: '',
         desc: ''
     };
+    const [values, setValues] = useState(initialValuesState);
 
-    const [values, setValues] = useState(initialState);
+    useEffect(() => {
+        if(props.editingLink) {
+            setValues({...props.editingLink});
+        } else {
+            setValues({...initialValuesState});
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.editingLink])
 
     const handleInputChange = (e: ChangeEvent) => {
         setValues({
@@ -23,7 +33,7 @@ const LinkForm = (props: props) => {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         props.callback(values);
-        setValues(initialState);
+        setValues(initialValuesState);
     }
 
     return (
@@ -64,7 +74,7 @@ const LinkForm = (props: props) => {
                 ></textarea>
             </div>
 
-            <button className="btn btn-primary btn-block">Save</button>
+            <button className="btn btn-primary btn-block">{props.editingLink ? 'Update' : 'Save'}</button>
         </form>
     )
 }
