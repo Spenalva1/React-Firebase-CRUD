@@ -7,8 +7,10 @@ import { toast } from 'react-toastify'
 const Links = () => {
     const [links, setLinks] = useState<Link[]>([]);
     const [editingLink, setEditingLink] = useState<Link | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const getLinks = async () => {
+        setIsLoading(true);
         let newLinks: Link[];
         firestore.collection('links').onSnapshot(doc => {
             newLinks = [];
@@ -19,6 +21,7 @@ const Links = () => {
                 })
             });
             setLinks(newLinks);
+            setIsLoading(false);
         });
 
     }
@@ -28,27 +31,32 @@ const Links = () => {
     }, [])
 
     const addOrEditLink = async (link: Link) => {
-        if(!link.id) {
+        setIsLoading(true);
+        if(!editingLink) {
             await firestore.collection('links').doc().set(link);
             toast('New Link Added', {
                 type: 'success',
                 autoClose: 2000
             });
+            setIsLoading(false);
         } else {
-            await firestore.collection('links').doc(link.id).update(link);
+            await firestore.collection('links').doc(editingLink.id).update(link);
             setEditingLink(null);
             toast('Link Updated', {
                 type: 'info',
                 autoClose: 2000
             });
+            setIsLoading(false);
         }
     }
 
     const deleteLink = async (id: string | undefined) => {
+        setIsLoading(true);
         await firestore.collection('links').doc(id).delete()
         toast('Link Deleted', {
             type: 'error'
         });
+        setIsLoading(false);
     }
 
     const openInNewTab = (url: string) => {
@@ -60,7 +68,7 @@ const Links = () => {
         <div className="col-12">
             <div className="row mb-4">
                 <div className="link-form-ctn col-xs-12 col-md-8 offset-md-2">
-                    <LinkForm editingLink={editingLink} callback={addOrEditLink} />
+                    <LinkForm isLoading={isLoading} editingLink={editingLink} callback={addOrEditLink} />
                 </div>
             </div>
             <div className="row justify-content-around" style={{'paddingLeft': '15px','paddingRight': '15px'}}>
